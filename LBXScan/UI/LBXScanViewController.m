@@ -1,6 +1,6 @@
 //
 //
-//  
+//
 //
 //  Created by lbxia on 15/10/21.
 //  Copyright © 2015年 lbxia. All rights reserved.
@@ -9,6 +9,7 @@
 #import "LBXScanViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <Photos/Photos.h>
+#define ISPHONE_X (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 812.0f)
 
 @interface LBXScanViewController ()
 @end
@@ -27,7 +28,7 @@
     
     self.view.backgroundColor = [UIColor blackColor];
     
-
+    
     switch (_libraryType) {
         case SLT_Native:
             self.title = @"native";
@@ -46,25 +47,28 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    //  [self openOrCloseFlash];
     
     [self drawScanView];
     
     [self requestCameraPemissionWithResult:^(BOOL granted) {
-
+        
         if (granted) {
-
+            
             //不延时，可能会导致界面黑屏并卡住一会
             [self performSelector:@selector(startScan) withObject:nil afterDelay:0.3];
-
+            
         }else{
-
+            
 #ifdef LBXScan_Define_UI
             [_qRScanView stopDeviceReadying];
 #endif
-
+            
+            [self showError:@"   请到设置隐私中开启本程序相机权限   "];
         }
     }];
-   
+    
+    
 }
 
 //绘制扫描区域
@@ -81,12 +85,6 @@
         
         [self.view addSubview:_qRScanView];
     }
-    
-    if (!_cameraInvokeMsg) {
-        
-//        _cameraInvokeMsg = NSLocalizedString(@"wating...", nil);
-    }
-    
     [_qRScanView startDeviceReadyingWithText:_cameraInvokeMsg];
 #endif
 }
@@ -124,7 +122,18 @@
 //启动设备
 - (void)startScan
 {
-    UIView *videoView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame))];
+    //    if ( ![LBXScanPermissions cameraPemission] )
+    //    {
+    //        [_qRScanView stopDeviceReadying];
+    //
+    //        [self showError:@"   请到设置隐私中开启本程序相机权限   "];
+    //        return;
+    //    }
+    
+    videoView = [[UIView alloc]initWithFrame:CGRectMake(40,self.view.frame.size.height/2-45-(self.view.frame.size.width-80)/2, self.view.frame.size.width-80, self.view.frame.size.width-80)];
+    if ([[UIScreen mainScreen] bounds].size.height == 812.0f) {
+        videoView.frame =CGRectMake(40,self.view.frame.size.height/2-85-(self.view.frame.size.width-80)/2, self.view.frame.size.width-80, self.view.frame.size.width-20);
+    }
     videoView.backgroundColor = [UIColor clearColor];
     [self.view insertSubview:videoView atIndex:0];
     __weak __typeof(self) weakSelf = self;
@@ -132,7 +141,7 @@
     switch (_libraryType) {
         case SLT_Native:
         {
-
+            
             
 #ifdef LBXScan_Define_Native
             
@@ -144,8 +153,9 @@
                     
                     //设置只识别框内区域
                     cropRect = [LBXScanView getScanRectWithPreView:self.view style:_style];
+                    
                 }
-
+                
                 NSString *strCode = AVMetadataObjectTypeQRCode;
                 if (_scanCodeType != SCT_BarCodeITF ) {
                     
@@ -161,15 +171,14 @@
             }
             [_scanObj startScan];
 #endif
-
+            
         }
             break;
         case SLT_ZXing:
         {
-
+            
 #ifdef LBXScan_Define_ZXing
             if (!_zxingObj) {
-                
                 __weak __typeof(self) weakSelf = self;
                 self.zxingObj = [[ZXingWrapper alloc]initWithPreView:videoView block:^(ZXBarcodeFormat barcodeFormat, NSString *str, UIImage *scanImg) {
                     
@@ -186,9 +195,9 @@
                     
                     //设置只识别框内区域
                     CGRect cropRect = [LBXScanView getZXingScanRectWithPreView:videoView style:_style];
-                                        
-                     [_zxingObj setScanRect:cropRect];
-                }               
+                    
+                    [_zxingObj setScanRect:cropRect];
+                }
             }
             [_zxingObj start];
 #endif
@@ -199,6 +208,8 @@
 #ifdef LBXScan_Define_ZBar
             if (!_zbarObj) {
                 
+                
+                
                 self.zbarObj = [[LBXZBarWrapper alloc]initWithPreView:videoView barCodeType:[self zbarTypeWithScanType:_scanCodeType] block:^(NSArray<LBXZbarResult *> *result) {
                     
                     //测试，只使用扫码结果第一项
@@ -207,7 +218,11 @@
                     LBXScanResult *scanResult = [[LBXScanResult alloc]init];
                     scanResult.strScanned = firstObj.strScanned;
                     scanResult.imgScanned = firstObj.imgScanned;
+                    //获取bounds
+                    scanResult.bound = firstObj.point;
                     scanResult.strBarCodeType = [LBXZBarWrapper convertFormat2String:firstObj.format];
+                    
+                    //                    NSLog(@"firstObj ——————————————————————————%f",firstObj.point.origin.x);
                     
                     [weakSelf scanResultWithArray:@[scanResult]];
                 }];
@@ -234,25 +249,25 @@
     //test only ZBAR_I25 effective,why
     return ZBAR_I25;
     
-//    switch (type) {
-//        case SCT_QRCode:
-//            return ZBAR_QRCODE;
-//            break;
-//        case SCT_BarCode93:
-//            return ZBAR_CODE93;
-//            break;
-//        case SCT_BarCode128:
-//            return ZBAR_CODE128;
-//            break;
-//        case SCT_BarEAN13:
-//            return ZBAR_EAN13;
-//            break;
-//            
-//        default:
-//            break;
-//    }
-//    
-//    return (zbar_symbol_type_t)type;
+    //    switch (type) {
+    //        case SCT_QRCode:
+    //            return ZBAR_QRCODE;
+    //            break;
+    //        case SCT_BarCode93:
+    //            return ZBAR_CODE93;
+    //            break;
+    //        case SCT_BarCode128:
+    //            return ZBAR_CODE128;
+    //            break;
+    //        case SCT_BarEAN13:
+    //            return ZBAR_EAN13;
+    //            break;
+    //
+    //        default:
+    //            break;
+    //    }
+    //
+    //    return (zbar_symbol_type_t)type;
 }
 #endif
 
@@ -261,7 +276,7 @@
     [super viewWillDisappear:animated];
     
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
- 
+    
     [self stopScan];
     
 #ifdef LBXScan_Define_UI
@@ -289,14 +304,16 @@
         case SLT_ZBar:
         {
 #ifdef LBXScan_Define_ZBar
+            
             [_zbarObj stop];
+            // [videoView removeFromSuperview];
 #endif
         }
             break;
         default:
             break;
     }
-
+    
 }
 
 #pragma mark -扫码结果处理
@@ -342,7 +359,7 @@
         default:
             break;
     }
-    self.isOpenFlash =!self.isOpenFlash;
+    //self.isOpenFlash =!self.isOpenFlash;
 }
 
 
@@ -358,7 +375,7 @@
     picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     
     picker.delegate = self;
-   
+    
     //部分机型有问题
     picker.allowsEditing = allowsEditing;
     
@@ -372,7 +389,7 @@
 
 -(void)imagePickerController:(UIImagePickerController*)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    [picker dismissViewControllerAnimated:YES completion:nil];    
+    [picker dismissViewControllerAnimated:YES completion:nil];
     
     __block UIImage* image = [info objectForKey:UIImagePickerControllerEditedImage];
     
@@ -381,7 +398,7 @@
     }
     
     __weak __typeof(self) weakSelf = self;
-        
+    
     switch (_libraryType) {
         case SLT_Native:
         {
@@ -522,7 +539,7 @@
         case SCT_BarEAN13:
             return AVMetadataObjectTypeEAN13Code;
             break;
-
+            
         default:
             return AVMetadataObjectTypeQRCode;
             break;
@@ -595,5 +612,5 @@
 
 
 
-
 @end
+

@@ -33,5 +33,9 @@
  */
 @property (nonatomic, copy) NSString* strBarCodeType;
 
+
+@property (nonatomic, assign) CGRect bound;
+
+
 @end
 

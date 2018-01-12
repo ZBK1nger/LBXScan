@@ -17,7 +17,7 @@
         _isNeedShowRetangle = YES;
         
         _whRatio = 1.0;
-       
+        
         _colorRetangleLine = [UIColor whiteColor];
         
         _centerUpOffset = 44;

@@ -1,6 +1,6 @@
 //
 //  LBXScanViewStyle.h
-//  
+//
 //  github:https://github.com/MxABC/LBXScan
 //  Created by lbxia on 15/11/15.
 //  Copyright © 2015年 lbxia. All rights reserved.
@@ -112,3 +112,4 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+

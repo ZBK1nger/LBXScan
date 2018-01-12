@@ -31,6 +31,10 @@
  */
 @property (nonatomic, assign) zbar_symbol_type_t format;
 
+@property (nonatomic,assign) CGRect point;
+
+@property (nonatomic,assign) NSString *vaule;
+
 @end
 
 
@@ -53,7 +57,7 @@
 
 /**
  初始化ZBar封装对象
-
+ 
  @param preView 视频预览视图
  @param barCodeType 条码类型
  @param block 扫码结果返回
@@ -64,7 +68,7 @@
 
 /**
  切换扫码类型
-
+ 
  @param zbarFormat 码制
  */
 - (void)changeBarCode:(zbar_symbol_type_t)zbarFormat;
@@ -91,7 +95,7 @@
 
 /**
  识别图片
-
+ 
  @param image 图片
  @param block 返回失败结果
  */
@@ -99,10 +103,11 @@
 
 /**
  将码的类型转换字符串表示
-
+ 
  @param format 码的类型
  @return 返回码的字符串
  */
 + (NSString*)convertFormat2String:(zbar_symbol_type_t)format;
 
 @end
+

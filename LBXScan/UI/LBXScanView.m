@@ -84,38 +84,23 @@ NS_ASSUME_NONNULL_END
     //设备启动状态提示
     if (!_activityView)
     {
-        self.activityView = [[UIActivityIndicatorView alloc]init];
+        self.activityView = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+        [_activityView setCenter:CGPointMake(XRetangleLeft +  sizeRetangle.width/2 - 50, YMinRetangle + sizeRetangle.height/2)];
         
         [_activityView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
-      
-        self.labelReadying = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, sizeRetangle.width, 30)];
+        [self addSubview:_activityView];
+        
+        CGRect labelReadyRect = CGRectMake(_activityView.frame.origin.x + _activityView.frame.size.width + 10, _activityView.frame.origin.y, 100, 30);
+        self.labelReadying = [[UILabel alloc]initWithFrame:labelReadyRect];
         _labelReadying.backgroundColor = [UIColor clearColor];
         _labelReadying.textColor  = [UIColor whiteColor];
         _labelReadying.font = [UIFont systemFontOfSize:18.];
         _labelReadying.text = text;
-        [_labelReadying sizeToFit];
-        CGRect frame = _labelReadying.frame;
-        CGPoint centerPt = CGPointMake(self.frame.size.width/2 + 20, YMinRetangle + sizeRetangle.height/2);
-        _labelReadying.bounds = CGRectMake(0, 0, frame.size.width,30);
-        _labelReadying.center = centerPt;
         
-        _activityView.bounds = CGRectMake(0, 0, 30, 30);
-        if (text)
-            _activityView.center = CGPointMake(centerPt.x - frame.size.width/2 - 24 , _labelReadying.center.y);
-        else
-            _activityView.center = CGPointMake(self.frame.size.width/2 , _labelReadying.center.y);
-        
-        [self addSubview:_activityView];
         [self addSubview:_labelReadying];
+        
         [_activityView startAnimating];
     }
-
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    
     
 }
 
@@ -177,7 +162,7 @@ NS_ASSUME_NONNULL_END
         default:
             break;
     }
-
+    
 }
 
 
@@ -209,7 +194,7 @@ NS_ASSUME_NONNULL_END
     
     //if (!_viewStyle.isScanRetangelSquare)
     if (_viewStyle.whRatio != 1)
-    {        
+    {
         CGFloat w = sizeRetangle.width;
         CGFloat h = w / _viewStyle.whRatio;
         
@@ -281,12 +266,12 @@ NS_ASSUME_NONNULL_END
         //CGContextAddLineToPoint(context, XRetangleLeft+sizeRetangle.width, YMinRetangle);
         
         CGContextStrokePath(context);
-       
+        
     }
-     _scanRetangleRect = CGRectMake(XRetangleLeft, YMinRetangle, sizeRetangle.width, sizeRetangle.height);
+    _scanRetangleRect = CGRectMake(XRetangleLeft, YMinRetangle, sizeRetangle.width, sizeRetangle.height);
     
     
-  //画矩形框4格外围相框角
+    //画矩形框4格外围相框角
     
     //相框角的宽度和高度
     int wAngle = _viewStyle.photoframeAngleW;
@@ -314,7 +299,7 @@ NS_ASSUME_NONNULL_END
         }
             break;
         case LBXScanViewPhotoframeAngleStyle_Inner:
-        {           
+        {
             diffAngle = -_viewStyle.photoframeLineW/2;
             
         }
@@ -414,18 +399,18 @@ NS_ASSUME_NONNULL_END
         CGFloat fixHeight = size.width * 1920. / 1080.;
         CGFloat fixPadding = (fixHeight - size.height)/2;
         rectOfInterest = CGRectMake((cropRect.origin.y + fixPadding)/fixHeight,
-                                           cropRect.origin.x/size.width,
-                                           cropRect.size.height/fixHeight,
-                                           cropRect.size.width/size.width);
-       
+                                    cropRect.origin.x/size.width,
+                                    cropRect.size.height/fixHeight,
+                                    cropRect.size.width/size.width);
+        
         
     } else {
         CGFloat fixWidth = size.height * 1080. / 1920.;
         CGFloat fixPadding = (fixWidth - size.width)/2;
         rectOfInterest = CGRectMake(cropRect.origin.y/size.height,
-                                           (cropRect.origin.x + fixPadding)/fixWidth,
-                                           cropRect.size.height/size.height,
-                                           cropRect.size.width/fixWidth);
+                                    (cropRect.origin.x + fixPadding)/fixWidth,
+                                    cropRect.size.height/size.height,
+                                    cropRect.size.width/fixWidth);
         
         
     }
@@ -467,3 +452,4 @@ NS_ASSUME_NONNULL_END
 
 
 @end
+

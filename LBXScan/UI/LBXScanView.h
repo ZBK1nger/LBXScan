@@ -23,7 +23,7 @@
  @brief  初始化
  @param frame 位置大小
  @param style 类型
-
+ 
  @return instancetype
  */
 -(id)initWithFrame:(CGRect)frame style:(LBXScanViewStyle*)style;
@@ -62,7 +62,7 @@
 
 /**
  根据矩形区域，获取ZXing库扫码识别兴趣区域
-
+ 
  @param view 视频流显示视图
  @param style 效果界面参数
  @return 识别区域
@@ -71,3 +71,4 @@
 
 
 @end
+

@@ -8,8 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import "LBXScanTypes.h"
-
+#import <LBXScanTypes.h>
 //UI
 #ifdef LBXScan_Define_UI
 #import "LBXScanView.h"
@@ -57,7 +56,9 @@ typedef NS_ENUM(NSInteger, SCANCODETYPE) {
 
 @interface LBXScanViewController : UIViewController<UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
-
+{
+    UIView *videoView;
+}
 #pragma mark ---- 需要初始化参数 ------
 //当前选择的扫码库
 @property (nonatomic, assign) SCANLIBRARYTYPE libraryType;
@@ -174,3 +175,4 @@ typedef NS_ENUM(NSInteger, SCANCODETYPE) {
 
 
 @end
+

@@ -30,10 +30,10 @@
         _readerView.frame = CGRectMake(0,0, preView.frame.size.width, preView.frame.size.height);
         _readerView.tracksSymbols=NO;
         _readerView.readerDelegate =self;
-       
+        //  _readerView.zoom = 3;
         //关闭闪光灯
         _readerView.torchMode = 0;
-        
+        // _readerView.device.whiteBalanceMode = 1;
         //二维码/条形码识别设置
         [self changeBarCode:barCodeType];
         
@@ -48,7 +48,7 @@
     ZBarImageScanner *scanner = _readerView.scanner;
     [scanner setSymbology: zbarFormat
                    config: ZBAR_CFG_ENABLE
-                       to: 1];
+                       to: 0];
 }
 
 - (void)start
@@ -79,11 +79,13 @@
         
         NSString* strCode = symbol.data;
         zbar_symbol_type_t format = symbol.type;
+        CGRect point = symbol.bounds;
         
         LBXZbarResult *result = [LBXZbarResult new];
         result.strScanned = strCode;
         result.imgScanned = image;
         result.format = format;
+        result.point = point;
         
         [array addObject:result];
     }
@@ -103,7 +105,7 @@
     NSMutableArray *array = [[NSMutableArray alloc]initWithCapacity:1];
     
     for(symbol in [read scanImage:cgImageRef]){
-       
+        
         NSString* strCode = symbol.data;
         zbar_symbol_type_t format = symbol.type;
         
@@ -114,7 +116,7 @@
         
         [array addObject:result];
     }
-
+    
     if (block) {
         block(array);
     }
@@ -202,3 +204,4 @@
 
 
 @end
+
