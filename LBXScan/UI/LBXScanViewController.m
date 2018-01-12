@@ -221,9 +221,6 @@
                     //获取bounds
                     scanResult.bound = firstObj.point;
                     scanResult.strBarCodeType = [LBXZBarWrapper convertFormat2String:firstObj.format];
-                    
-                    //                    NSLog(@"firstObj ——————————————————————————%f",firstObj.point.origin.x);
-                    
                     [weakSelf scanResultWithArray:@[scanResult]];
                 }];
             }

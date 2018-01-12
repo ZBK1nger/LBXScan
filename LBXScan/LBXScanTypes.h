@@ -10,10 +10,6 @@
 @import UIKit;
 @import Foundation;
 
-
-
-
-
 @interface LBXScanResult : NSObject
 
 
@@ -33,7 +29,7 @@
  */
 @property (nonatomic, copy) NSString* strBarCodeType;
 
-
+// 获取Zbar 扫描的二维码区域 - 位置不固定大小一样
 @property (nonatomic, assign) CGRect bound;
 
 
